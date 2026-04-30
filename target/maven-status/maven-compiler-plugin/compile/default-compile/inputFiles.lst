@@ -1,0 +1,17 @@
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/controller/AppointmentController.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/service/BillingService.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/EyeCareApplication.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/model/Doctor.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/config/CorsConfig.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/service/DoctorService.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/service/PatientService.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/controller/PrescriptionController.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/controller/PatientController.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/service/AppointmentService.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/model/Bill.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/model/Patient.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/model/Prescription.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/service/PrescriptionService.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/controller/BillingController.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/controller/DoctorController.java
+/workspaces/mcp-eye-care-integration-platform/src/main/java/com/eyecare/model/Appointment.java

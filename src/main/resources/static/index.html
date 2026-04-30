@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EyeCare Hospital Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #222; }
+    header { background: #1a3c5e; color: white; padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    header h1 { font-size: 22px; font-weight: 600; }
+    header span { font-size: 13px; opacity: 0.7; }
+    nav { background: #fff; border-bottom: 1px solid #dde3ec; display: flex; gap: 4px; padding: 0 24px; }
+    nav button { padding: 14px 20px; border: none; background: none; cursor: pointer; font-size: 14px; color: #555; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    nav button.active, nav button:hover { color: #1a3c5e; border-bottom-color: #1a3c5e; font-weight: 500; }
+    main { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+    .section { display: none; }
+    .section.active { display: block; }
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 18px; color: #1a3c5e; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .card { background: white; border-radius: 10px; padding: 18px; border: 1px solid #dde3ec; }
+    .card .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .card .value { font-size: 20px; font-weight: 600; color: #1a3c5e; }
+    table { width: 100%; background: white; border-radius: 10px; border-collapse: collapse; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    th { background: #1a3c5e; color: white; padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 500; }
+    td { padding: 11px 16px; font-size: 13px; border-bottom: 1px solid #f0f4f8; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7f9fc; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge.green { background: #d1fae5; color: #065f46; }
+    .badge.yellow { background: #fef3c7; color: #92400e; }
+    .badge.blue { background: #dbeafe; color: #1e40af; }
+    .badge.red { background: #fee2e2; color: #991b1b; }
+    form { background: white; border-radius: 10px; padding: 24px; border: 1px solid #dde3ec; margin-bottom: 28px; }
+    form h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #333; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
+    input, select { width: 100%; padding: 9px 12px; border: 1px solid #cdd4df; border-radius: 6px; font-size: 14px; outline: none; transition: border 0.2s; }
+    input:focus, select:focus { border-color: #1a3c5e; }
+    button.btn { padding: 10px 22px; background: #1a3c5e; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500; transition: background 0.2s; }
+    button.btn:hover { background: #12294a; }
+    .loading { text-align: center; padding: 40px; color: #888; }
+    .error { color: #dc2626; font-size: 13px; padding: 8px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="font-size:28px">👁️</div>
+  <div>
+    <h1>EyeCare Hospital Portal</h1>
+    <span>MCP Integration Platform — All Services in One Place</span>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('patients')">Patients</button>
+  <button onclick="showSection('appointments')">Appointments</button>
+  <button onclick="showSection('doctors')">Doctors</button>
+  <button onclick="showSection('prescriptions')">Prescriptions</button>
+  <button onclick="showSection('billing')">Billing</button>
+</nav>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active">
+    <h2>Hospital Overview</h2>
+    <div class="card-grid" id="dashboard-cards">
+      <div class="card"><div class="label">Total Patients</div><div class="value" id="count-patients">—</div></div>
+      <div class="card"><div class="label">Appointments</div><div class="value" id="count-appointments">—</div></div>
+      <div class="card"><div class="label">Doctors</div><div class="value" id="count-doctors">—</div></div>
+      <div class="card"><div class="label">Pending Bills</div><div class="value" id="count-bills">—</div></div>
+    </div>
+  </div>
+
+  <!-- PATIENTS -->
+  <div id="patients" class="section">
+    <h2>Patient Management</h2>
+    <form onsubmit="addPatient(event)">
+      <h3>Register New Patient</h3>
+      <div class="form-row">
+        <div><label>Full Name</label><input id="p-name" placeholder="e.g. Ravi Sharma" required/></div>
+        <div><label>Email</label><input id="p-email" type="email" placeholder="email@example.com" required/></div>
+      </div>
+      <div class="form-row">
+        <div><label>Phone</label><input id="p-phone" placeholder="9876543210"/></div>
+        <div><label>Eye Condition</label>
+          <select id="p-condition">
+            <option>Myopia</option><option>Hyperopia</option><option>Astigmatism</option>
+            <option>Cataract</option><option>Glaucoma</option><option>Diabetic Retinopathy</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn">Register Patient</button>
+    </form>
+    <table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Condition</th></tr></thead>
+    <tbody id="patients-table"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody></table>
+  </div>
+
+  <!-- APPOINTMENTS -->
+  <div id="appointments" class="section">
+    <h2>Appointment Scheduler</h2>
+    <form onsubmit="addAppointment(event)">
+      <h3>Book Appointment</h3>
+      <div class="form-row">
+        <div><label>Patient ID</label><input id="a-patient" placeholder="e.g. P001" required/></div>
+        <div><label>Doctor ID</label><input id="a-doctor" placeholder="e.g. D001" required/></div>
+      </div>
+      <div class="form-row">
+        <div><label>Date</label><input id="a-date" type="date" required/></div>
+        <div><label>Time</label><input id="a-time" type="time" required/></div>
+      </div>
+      <div style="margin-bottom:14px"><label>Notes</label><input id="a-notes" placeholder="Reason for visit"/></div>
+      <button type="submit" class="btn">Book Appointment</button>
+    </form>
+    <table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Notes</th></tr></thead>
+    <tbody id="appointments-table"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table>
+  </div>
+
+  <!-- DOCTORS -->
+  <div id="doctors" class="section">
+    <h2>Doctor Directory</h2>
+    <table><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Availability</th></tr></thead>
+    <tbody id="doctors-table"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody></table>
+  </div>
+
+  <!-- PRESCRIPTIONS -->
+  <div id="prescriptions" class="section">
+    <h2>Prescription Management</h2>
+    <form onsubmit="addPrescription(event)">
+      <h3>Issue Prescription</h3>
+      <div class="form-row">
+        <div><label>Patient ID</label><input id="rx-patient" placeholder="P001" required/></div>
+        <div><label>Doctor ID</label><input id="rx-doctor" placeholder="D001" required/></div>
+      </div>
+      <div class="form-row">
+        <div><label>Medication</label><input id="rx-med" placeholder="e.g. Latanoprost 0.005%"/></div>
+        <div><label>Dosage</label><input id="rx-dose" placeholder="e.g. 1 drop nightly"/></div>
+      </div>
+      <div class="form-row">
+        <div><label>Right Eye Power</label><input id="rx-right" placeholder="e.g. -2.50"/></div>
+        <div><label>Left Eye Power</label><input id="rx-left" placeholder="e.g. -2.25"/></div>
+      </div>
+      <button type="submit" class="btn">Issue Prescription</button>
+    </form>
+    <table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Medication</th><th>Dosage</th><th>R Eye</th><th>L Eye</th><th>Date</th></tr></thead>
+    <tbody id="prescriptions-table"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table>
+  </div>
+
+  <!-- BILLING -->
+  <div id="billing" class="section">
+    <h2>Billing Service</h2>
+    <form onsubmit="addBill(event)">
+      <h3>Generate Bill</h3>
+      <div class="form-row">
+        <div><label>Patient ID</label><input id="b-patient" placeholder="P001" required/></div>
+        <div><label>Amount (₹)</label><input id="b-amount" type="number" placeholder="500"/></div>
+      </div>
+      <div style="margin-bottom:14px"><label>Description</label><input id="b-desc" placeholder="e.g. Consultation fee"/></div>
+      <button type="submit" class="btn">Generate Bill</button>
+    </form>
+    <table><thead><tr><th>ID</th><th>Patient</th><th>Amount</th><th>Description</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody id="billing-table"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table>
+  </div>
+
+</main>
+
+<script>
+  const BASE = 'http://localhost:8080/api';
+
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+    loadSection(id);
+  }
+
+  function badge(text, color) {
+    return `<span class="badge ${color}">${text}</span>`;
+  }
+
+  async function api(path, options) {
+    const res = await fetch(BASE + path, options);
+    if (!res.ok) throw new Error(await res.text());
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  async function loadSection(section) {
+    try {
+      if (section === 'dashboard') {
+        const [p, a, d, b] = await Promise.all([
+          api('/patients'), api('/appointments'), api('/doctors'), api('/billing')
+        ]);
+        document.getElementById('count-patients').textContent = p.length;
+        document.getElementById('count-appointments').textContent = a.length;
+        document.getElementById('count-doctors').textContent = d.length;
+        document.getElementById('count-bills').textContent =
+          b.filter(x => x.status === 'PENDING').length;
+      }
+      else if (section === 'patients') {
+        const data = await api('/patients');
+        document.getElementById('patients-table').innerHTML = data.map(p => `
+          <tr>
+            <td>${p.id}</td><td><strong>${p.name}</strong></td>
+            <td>${p.email}</td><td>${p.phone}</td>
+            <td>${badge(p.condition, 'blue')}</td>
+          </tr>`).join('');
+      }
+      else if (section === 'appointments') {
+        const data = await api('/appointments');
+        document.getElementById('appointments-table').innerHTML = data.map(a => `
+          <tr>
+            <td>${a.id}</td><td>${a.patientId}</td><td>${a.doctorId}</td>
+            <td>${a.date}</td><td>${a.time}</td>
+            <td>${badge(a.status, a.status==='SCHEDULED'?'yellow':a.status==='COMPLETED'?'green':'red')}</td>
+            <td>${a.notes || '—'}</td>
+          </tr>`).join('');
+      }
+      else if (section === 'doctors') {
+        const data = await api('/doctors');
+        document.getElementById('doctors-table').innerHTML = data.map(d => `
+          <tr>
+            <td>${d.id}</td><td><strong>${d.name}</strong></td>
+            <td>${badge(d.specialization, 'blue')}</td><td>${d.availability}</td>
+          </tr>`).join('');
+      }
+      else if (section === 'prescriptions') {
+        const data = await api('/prescriptions');
+        document.getElementById('prescriptions-table').innerHTML = data.map(r => `
+          <tr>
+            <td>${r.id}</td><td>${r.patientId}</td><td>${r.doctorId}</td>
+            <td>${r.medication}</td><td>${r.dosage}</td>
+            <td>${r.rightEyePower}</td><td>${r.leftEyePower}</td>
+            <td>${r.issuedDate || '—'}</td>
+          </tr>`).join('');
+      }
+      else if (section === 'billing') {
+        const data = await api('/billing');
+        document.getElementById('billing-table').innerHTML = data.map(b => `
+          <tr>
+            <td>${b.id}</td><td>${b.patientId}</td>
+            <td><strong>₹${b.amount.toLocaleString('en-IN')}</strong></td>
+            <td>${b.description}</td>
+            <td>${badge(b.status, b.status==='PAID'?'green':'yellow')}</td>
+            <td>${b.date}</td>
+          </tr>`).join('');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function addPatient(e) {
+    e.preventDefault();
+    await api('/patients', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name: document.getElementById('p-name').value,
+        email: document.getElementById('p-email').value,
+        phone: document.getElementById('p-phone').value,
+        condition: document.getElementById('p-condition').value
+      })
+    });
+    e.target.reset();
+    loadSection('patients');
+  }
+
+  async function addAppointment(e) {
+    e.preventDefault();
+    await api('/appointments', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        patientId: document.getElementById('a-patient').value,
+        doctorId: document.getElementById('a-doctor').value,
+        date: document.getElementById('a-date').value,
+        time: document.getElementById('a-time').value,
+        status: 'SCHEDULED',
+        notes: document.getElementById('a-notes').value
+      })
+    });
+    e.target.reset();
+    loadSection('appointments');
+  }
+
+  async function addPrescription(e) {
+    e.preventDefault();
+    await api('/prescriptions', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        patientId: document.getElementById('rx-patient').value,
+        doctorId: document.getElementById('rx-doctor').value,
+        medication: document.getElementById('rx-med').value,
+        dosage: document.getElementById('rx-dose').value,
+        rightEyePower: document.getElementById('rx-right').value,
+        leftEyePower: document.getElementById('rx-left').value,
+        issuedDate: new Date().toISOString().split('T')[0]
+      })
+    });
+    e.target.reset();
+    loadSection('prescriptions');
+  }
+
+  async function addBill(e) {
+    e.preventDefault();
+    await api('/billing', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        patientId: document.getElementById('b-patient').value,
+        amount: parseFloat(document.getElementById('b-amount').value),
+        description: document.getElementById('b-desc').value,
+        status: 'PENDING',
+        date: new Date().toISOString().split('T')[0]
+      })
+    });
+    e.target.reset();
+    loadSection('billing');
+  }
+
+  // Load dashboard on start
+  loadSection('dashboard');
+</script>
+</body>
+</html>
